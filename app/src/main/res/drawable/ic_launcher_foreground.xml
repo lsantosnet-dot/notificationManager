@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Stacked notification cards, echoing the app's grouped-notification concept. -->
+    <path
+        android:fillColor="#232833"
+        android:pathData="M30,34 h48 a6,6 0 0 1 6,6 v8 a6,6 0 0 1 -6,6 h-48 a6,6 0 0 1 -6,-6 v-8 a6,6 0 0 1 6,-6 z" />
+    <path
+        android:fillColor="#4FD1C5"
+        android:pathData="M30,56 h48 a6,6 0 0 1 6,6 v8 a6,6 0 0 1 -6,6 h-48 a6,6 0 0 1 -6,-6 v-8 a6,6 0 0 1 6,-6 z" />
+    <path
+        android:fillColor="#F2A65A"
+        android:pathData="M69,40 m-6,0 a6,6 0 1 0 12,0 a6,6 0 1 0 -12,0" />
+</vector>

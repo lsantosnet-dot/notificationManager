@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Notification content is sensitive: keep the local Room database out of both
+  Auto Backup (cloud) and device-to-device transfer, on API 31+.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="database" path="painel_notificacoes.db" />
+        <exclude domain="database" path="painel_notificacoes.db-wal" />
+        <exclude domain="database" path="painel_notificacoes.db-shm" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="database" path="painel_notificacoes.db" />
+        <exclude domain="database" path="painel_notificacoes.db-wal" />
+        <exclude domain="database" path="painel_notificacoes.db-shm" />
+    </device-transfer>
+</data-extraction-rules>

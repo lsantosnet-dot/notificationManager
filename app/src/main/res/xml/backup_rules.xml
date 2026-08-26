@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Legacy Auto Backup rules for API 26-30 (dataExtractionRules covers API 31+). -->
+<full-backup-content>
+    <exclude domain="database" path="painel_notificacoes.db" />
+    <exclude domain="database" path="painel_notificacoes.db-wal" />
+    <exclude domain="database" path="painel_notificacoes.db-shm" />
+</full-backup-content>
