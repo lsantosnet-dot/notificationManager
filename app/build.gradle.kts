@@ -84,10 +84,9 @@ dependencies {
     implementation(libs.datastore.preferences)
 
     implementation(libs.kotlinx.coroutines.android)
-    implementation(libs.kotlinx.coroutines.play.services)
+    implementation(libs.kotlinx.coroutines.guava)
 
     implementation(libs.mlkit.genai.summarization)
-    implementation(libs.play.services.tasks)
 
     implementation(libs.coil.compose)
 }
