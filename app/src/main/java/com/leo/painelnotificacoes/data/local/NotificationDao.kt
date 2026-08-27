@@ -53,4 +53,7 @@ interface NotificationDao {
 
     @Query("DELETE FROM notifications WHERE timestamp < :cutoffMillis")
     suspend fun purgeOlderThan(cutoffMillis: Long)
+
+    @Query("DELETE FROM notifications")
+    suspend fun deleteAll()
 }

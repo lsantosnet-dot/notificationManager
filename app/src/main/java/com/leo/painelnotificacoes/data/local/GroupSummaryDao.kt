@@ -17,4 +17,7 @@ interface GroupSummaryDao {
 
     @Query("DELETE FROM group_summaries WHERE packageName = :packageName")
     suspend fun deleteForPackage(packageName: String)
+
+    @Query("DELETE FROM group_summaries")
+    suspend fun deleteAll()
 }
