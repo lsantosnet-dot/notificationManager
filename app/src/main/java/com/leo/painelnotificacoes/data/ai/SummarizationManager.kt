@@ -62,6 +62,10 @@ class SummarizationManager(private val context: Context) {
 
     private suspend fun awaitDownload(summarizer: Summarizer): Unit = suspendCancellableCoroutine { cont ->
         summarizer.downloadFeature(object : DownloadCallback {
+            override fun onDownloadStarted(bytesToDownload: Long) = Unit
+
+            override fun onDownloadProgress(bytesDownloaded: Long) = Unit
+
             override fun onDownloadCompleted() {
                 if (cont.isActive) cont.resume(Unit)
             }
