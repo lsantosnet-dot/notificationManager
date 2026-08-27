@@ -62,7 +62,9 @@ fun PainelNavHost(
                             packageName = packageName,
                             initialAppName = appName,
                             repository = container.notificationRepository,
+                            settingsRepository = container.settingsRepository,
                             summarizationManager = container.summarizationManager,
+                            geminiCloudSummarizer = container.geminiCloudSummarizer,
                         )
                     }
                 },

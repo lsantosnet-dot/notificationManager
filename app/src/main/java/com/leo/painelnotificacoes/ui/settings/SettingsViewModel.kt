@@ -17,7 +17,14 @@ class SettingsViewModel(private val settingsRepository: SettingsRepository) : Vi
             SettingsRepository.DEFAULT_RETENTION_DAYS,
         )
 
+    val geminiApiKey: StateFlow<String?> = settingsRepository.geminiApiKey
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
     fun setRetentionDays(days: Int) {
         viewModelScope.launch { settingsRepository.setRetentionDays(days) }
+    }
+
+    fun setGeminiApiKey(key: String) {
+        viewModelScope.launch { settingsRepository.setGeminiApiKey(key) }
     }
 }

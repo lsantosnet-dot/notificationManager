@@ -64,6 +64,7 @@ fun GroupDetailScreen(
 ) {
     val items by viewModel.items.collectAsStateWithLifecycle()
     val summaryState by viewModel.summaryCardState.collectAsStateWithLifecycle()
+    val usingCloudEngine by viewModel.usingCloudEngine.collectAsStateWithLifecycle()
     var showDeleteAllDialog by remember { mutableStateOf(false) }
 
     Column(modifier = modifier.fillMaxSize()) {
@@ -76,6 +77,7 @@ fun GroupDetailScreen(
 
         SummaryCard(
             state = summaryState,
+            usingCloudEngine = usingCloudEngine,
             onGenerateClick = viewModel::generateSummary,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
         )
@@ -187,6 +189,7 @@ private fun DetailAppBar(
 @Composable
 private fun SummaryCard(
     state: SummaryCardUiState,
+    usingCloudEngine: Boolean,
     onGenerateClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -206,7 +209,7 @@ private fun SummaryCard(
                 modifier = Modifier.size(14.dp),
             )
             Text(
-                text = "RESUMO · GEMINI NANO (ON-DEVICE)",
+                text = if (usingCloudEngine) "RESUMO · GEMINI (NUVEM)" else "RESUMO · GEMINI NANO (ON-DEVICE)",
                 style = MaterialTheme.typography.labelSmall,
                 color = Accent,
                 fontWeight = FontWeight.Bold,
@@ -224,18 +227,19 @@ private fun SummaryCard(
                 SummaryCardUiState.Unavailable -> Text(
                     text = "O resumo por IA local não está disponível neste dispositivo. " +
                         "Esse recurso depende do modelo Gemini Nano (ML Kit GenAI), presente apenas " +
-                        "em alguns aparelhos compatíveis.",
+                        "em alguns aparelhos compatíveis. Configure uma chave de API do Gemini em " +
+                        "Ajustes para usar o resumo na nuvem como alternativa.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = TextDim,
                 )
 
                 SummaryCardUiState.ReadyToSummarize -> SummaryCta(
-                    label = "Resumir grupo com IA local",
+                    label = if (usingCloudEngine) "Resumir grupo com Gemini (nuvem)" else "Resumir grupo com IA local",
                     onClick = onGenerateClick,
                 )
 
                 SummaryCardUiState.Processing -> SummaryCta(
-                    label = "Processando no dispositivo…",
+                    label = if (usingCloudEngine) "Processando na nuvem…" else "Processando no dispositivo…",
                     onClick = {},
                     loading = true,
                 )

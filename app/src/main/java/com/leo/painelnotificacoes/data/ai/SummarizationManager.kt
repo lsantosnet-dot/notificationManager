@@ -39,7 +39,7 @@ class SummarizationManager(private val context: Context) {
             if (status == FeatureStatus.DOWNLOADABLE || status == FeatureStatus.DOWNLOADING) {
                 awaitDownload(summarizer)
             }
-            val request = SummarizationRequest.builder(buildInputText(notifications)).build()
+            val request = SummarizationRequest.builder(buildNotificationSummaryInput(notifications)).build()
             summarizer.runInference(request).await().summary
         }
     }
@@ -74,31 +74,6 @@ class SummarizationManager(private val context: Context) {
                 if (cont.isActive) cont.resumeWithException(e)
             }
         })
-    }
-
-    /**
-     * Builds the summarizer input, keeping the most recent notifications (they matter most) and
-     * truncating older ones to stay under the API's input size limit.
-     */
-    private fun buildInputText(notifications: List<NotificationEntity>): String {
-        val chronological = notifications.sortedBy { it.timestamp }
-        val lines = ArrayDeque<String>()
-        var budget = MAX_INPUT_CHARS
-        for (notification in chronological.asReversed()) {
-            val sender = notification.title?.takeIf { it.isNotBlank() } ?: notification.appName
-            val line = "$sender: ${notification.text.orEmpty()}"
-            val cost = line.length + 1
-            if (budget - cost < 0 && lines.isNotEmpty()) break
-            lines.addFirst(line)
-            budget -= cost
-        }
-        return lines.joinToString("\n")
-    }
-
-    companion object {
-        // The API documents an input size limit; stay comfortably under it and prefer chunking
-        // by recency over a hard mid-notification cut.
-        private const val MAX_INPUT_CHARS = 4000
     }
 }
 
