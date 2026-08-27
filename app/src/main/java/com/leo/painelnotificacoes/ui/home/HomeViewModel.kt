@@ -30,6 +30,10 @@ class HomeViewModel(private val repository: NotificationRepository) : ViewModel(
         viewModelScope.launch { repository.deleteGroup(packageName) }
     }
 
+    fun deleteAllNotifications() {
+        viewModelScope.launch { repository.deleteAllNotifications() }
+    }
+
     private fun GroupOverview.toUi() = HomeGroupUi(
         packageName = packageName,
         appName = appName,

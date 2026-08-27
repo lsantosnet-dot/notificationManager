@@ -14,13 +14,19 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.DeleteSweep
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import com.leo.painelnotificacoes.ui.components.GroupAvatar
 import com.leo.painelnotificacoes.ui.components.NoiseMeter
 import com.leo.painelnotificacoes.ui.theme.Background
+import com.leo.painelnotificacoes.ui.theme.Danger
 import com.leo.painelnotificacoes.ui.theme.Surface
 import com.leo.painelnotificacoes.ui.theme.Surface2
 import com.leo.painelnotificacoes.ui.theme.TextDim
@@ -49,6 +56,7 @@ fun HomeScreen(
         groups = groups,
         onGroupClick = onGroupClick,
         onSettingsClick = onSettingsClick,
+        onClearAllClick = viewModel::deleteAllNotifications,
         modifier = modifier,
     )
 }
@@ -58,8 +66,11 @@ private fun HomeScreenContent(
     groups: List<HomeGroupUi>,
     onGroupClick: (packageName: String, appName: String) -> Unit,
     onSettingsClick: () -> Unit,
+    onClearAllClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var showClearAllDialog by remember { mutableStateOf(false) }
+
     Column(modifier = modifier.fillMaxSize().background(Background)) {
         Row(
             modifier = Modifier
@@ -87,6 +98,11 @@ private fun HomeScreenContent(
                     modifier = Modifier.padding(top = 2.dp),
                 )
             }
+            if (groups.isNotEmpty()) {
+                IconButton(onClick = { showClearAllDialog = true }) {
+                    Icon(imageVector = Icons.Outlined.DeleteSweep, contentDescription = "Limpar tudo", tint = TextDim)
+                }
+            }
             IconButton(onClick = onSettingsClick) {
                 Icon(imageVector = Icons.Outlined.Settings, contentDescription = "Ajustes", tint = TextDim)
             }
@@ -109,6 +125,25 @@ private fun HomeScreenContent(
                 }
             }
         }
+    }
+
+    if (showClearAllDialog) {
+        AlertDialog(
+            onDismissRequest = { showClearAllDialog = false },
+            title = { Text("Limpar tudo?") },
+            text = { Text("Todas as notificações de todos os apps serão excluídas permanentemente.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    showClearAllDialog = false
+                    onClearAllClick()
+                }) {
+                    Text("Limpar", color = Danger)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showClearAllDialog = false }) { Text("Cancelar") }
+            },
+        )
     }
 }
 

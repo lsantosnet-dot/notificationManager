@@ -41,6 +41,11 @@ class NotificationRepository(
         groupSummaryDao.deleteForPackage(packageName)
     }
 
+    suspend fun deleteAllNotifications() {
+        notificationDao.deleteAll()
+        groupSummaryDao.deleteAll()
+    }
+
     suspend fun saveSummary(summary: GroupSummaryEntity) {
         groupSummaryDao.upsert(summary)
     }
