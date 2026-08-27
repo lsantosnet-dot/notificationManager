@@ -11,8 +11,8 @@ import com.google.mlkit.genai.summarization.SummarizerOptions
 import com.leo.painelnotificacoes.data.local.NotificationEntity
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
+import kotlinx.coroutines.guava.await
 import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.coroutines.tasks.await
 
 /**
  * Thin coroutine wrapper around the ML Kit GenAI Summarization API (Gemini Nano, fully on-device —
