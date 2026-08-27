@@ -1,6 +1,7 @@
 package com.leo.painelnotificacoes
 
 import android.content.Context
+import com.leo.painelnotificacoes.data.ai.GeminiCloudSummarizer
 import com.leo.painelnotificacoes.data.ai.SummarizationManager
 import com.leo.painelnotificacoes.data.local.AppDatabase
 import com.leo.painelnotificacoes.data.repository.NotificationRepository
@@ -19,4 +20,6 @@ class AppContainer(context: Context) {
     val settingsRepository = SettingsRepository(context)
 
     val summarizationManager = SummarizationManager(context)
+
+    val geminiCloudSummarizer = GeminiCloudSummarizer()
 }
