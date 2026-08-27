@@ -14,9 +14,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Sort
+import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.DeleteSweep
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -52,11 +56,14 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
 ) {
     val groups by viewModel.groups.collectAsStateWithLifecycle()
+    val sortOption by viewModel.currentSortOption.collectAsStateWithLifecycle()
     HomeScreenContent(
         groups = groups,
+        sortOption = sortOption,
         onGroupClick = onGroupClick,
         onSettingsClick = onSettingsClick,
         onClearAllClick = viewModel::deleteAllNotifications,
+        onSortOptionSelected = viewModel::setSortOption,
         modifier = modifier,
     )
 }
@@ -64,12 +71,15 @@ fun HomeScreen(
 @Composable
 private fun HomeScreenContent(
     groups: List<HomeGroupUi>,
+    sortOption: HomeSortOption,
     onGroupClick: (packageName: String, appName: String) -> Unit,
     onSettingsClick: () -> Unit,
     onClearAllClick: () -> Unit,
+    onSortOptionSelected: (HomeSortOption) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showClearAllDialog by remember { mutableStateOf(false) }
+    var showSortMenu by remember { mutableStateOf(false) }
 
     Column(modifier = modifier.fillMaxSize().background(Background)) {
         Row(
@@ -99,6 +109,37 @@ private fun HomeScreenContent(
                 )
             }
             if (groups.isNotEmpty()) {
+                Box {
+                    IconButton(onClick = { showSortMenu = true }) {
+                        Icon(imageVector = Icons.AutoMirrored.Outlined.Sort, contentDescription = "Ordenar", tint = TextDim)
+                    }
+                    DropdownMenu(expanded = showSortMenu, onDismissRequest = { showSortMenu = false }) {
+                        SortMenuItem(
+                            label = "Mais recentes",
+                            selected = sortOption == HomeSortOption.RECENT,
+                            onClick = {
+                                showSortMenu = false
+                                onSortOptionSelected(HomeSortOption.RECENT)
+                            },
+                        )
+                        SortMenuItem(
+                            label = "Ordem alfabética",
+                            selected = sortOption == HomeSortOption.NAME,
+                            onClick = {
+                                showSortMenu = false
+                                onSortOptionSelected(HomeSortOption.NAME)
+                            },
+                        )
+                        SortMenuItem(
+                            label = "Mais notificações",
+                            selected = sortOption == HomeSortOption.COUNT,
+                            onClick = {
+                                showSortMenu = false
+                                onSortOptionSelected(HomeSortOption.COUNT)
+                            },
+                        )
+                    }
+                }
                 IconButton(onClick = { showClearAllDialog = true }) {
                     Icon(imageVector = Icons.Outlined.DeleteSweep, contentDescription = "Limpar tudo", tint = TextDim)
                 }
@@ -145,6 +186,19 @@ private fun HomeScreenContent(
             },
         )
     }
+}
+
+@Composable
+private fun SortMenuItem(label: String, selected: Boolean, onClick: () -> Unit) {
+    DropdownMenuItem(
+        text = { Text(label) },
+        onClick = onClick,
+        trailingIcon = {
+            if (selected) {
+                Icon(imageVector = Icons.Outlined.Check, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+            }
+        },
+    )
 }
 
 @Composable
