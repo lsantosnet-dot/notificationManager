@@ -34,7 +34,7 @@ fun PainelNavHost(
         composable(ROUTE_HOME) {
             val viewModel = viewModel<HomeViewModel>(
                 factory = viewModelFactory {
-                    initializer { HomeViewModel(container.notificationRepository) }
+                    initializer { HomeViewModel(container.notificationRepository, container.settingsRepository) }
                 },
             )
             HomeScreen(

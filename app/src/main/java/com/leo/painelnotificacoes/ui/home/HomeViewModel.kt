@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.leo.painelnotificacoes.data.local.GroupOverview
 import com.leo.painelnotificacoes.data.repository.NotificationRepository
+import com.leo.painelnotificacoes.data.repository.SettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -27,7 +28,10 @@ enum class HomeSortOption {
     COUNT,
 }
 
-class HomeViewModel(private val repository: NotificationRepository) : ViewModel() {
+class HomeViewModel(
+    private val repository: NotificationRepository,
+    settingsRepository: SettingsRepository,
+) : ViewModel() {
 
     private val sortOption = MutableStateFlow(HomeSortOption.RECENT)
 
@@ -39,6 +43,9 @@ class HomeViewModel(private val repository: NotificationRepository) : ViewModel(
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     val currentSortOption: StateFlow<HomeSortOption> = sortOption
+
+    val firstCaptureTimestamp: StateFlow<Long?> = settingsRepository.firstCaptureTimestamp
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     fun setSortOption(option: HomeSortOption) {
         sortOption.value = option
