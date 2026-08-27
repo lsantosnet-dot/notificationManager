@@ -12,12 +12,13 @@ class AppContainer(context: Context) {
 
     private val database = AppDatabase.getInstance(context)
 
+    val settingsRepository = SettingsRepository(context)
+
     val notificationRepository = NotificationRepository(
         notificationDao = database.notificationDao(),
         groupSummaryDao = database.groupSummaryDao(),
+        settingsRepository = settingsRepository,
     )
-
-    val settingsRepository = SettingsRepository(context)
 
     val summarizationManager = SummarizationManager(context)
 

@@ -46,6 +46,7 @@ import com.leo.painelnotificacoes.ui.theme.Surface2
 import com.leo.painelnotificacoes.ui.theme.TextDim
 import com.leo.painelnotificacoes.ui.theme.TextFaint
 import com.leo.painelnotificacoes.ui.theme.TextPrimary
+import com.leo.painelnotificacoes.util.formatFullDateTime
 import com.leo.painelnotificacoes.util.formatRelativeTime
 
 @Composable
@@ -57,9 +58,11 @@ fun HomeScreen(
 ) {
     val groups by viewModel.groups.collectAsStateWithLifecycle()
     val sortOption by viewModel.currentSortOption.collectAsStateWithLifecycle()
+    val firstCaptureTimestamp by viewModel.firstCaptureTimestamp.collectAsStateWithLifecycle()
     HomeScreenContent(
         groups = groups,
         sortOption = sortOption,
+        firstCaptureTimestamp = firstCaptureTimestamp,
         onGroupClick = onGroupClick,
         onSettingsClick = onSettingsClick,
         onClearAllClick = viewModel::deleteAllNotifications,
@@ -72,6 +75,7 @@ fun HomeScreen(
 private fun HomeScreenContent(
     groups: List<HomeGroupUi>,
     sortOption: HomeSortOption,
+    firstCaptureTimestamp: Long?,
     onGroupClick: (packageName: String, appName: String) -> Unit,
     onSettingsClick: () -> Unit,
     onClearAllClick: () -> Unit,
@@ -107,6 +111,14 @@ private fun HomeScreenContent(
                     color = TextDim,
                     modifier = Modifier.padding(top = 2.dp),
                 )
+                if (firstCaptureTimestamp != null) {
+                    Text(
+                        text = "Coletando notificações desde ${formatFullDateTime(firstCaptureTimestamp)}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = TextFaint,
+                        modifier = Modifier.padding(top = 4.dp),
+                    )
+                }
             }
             if (groups.isNotEmpty()) {
                 Box {

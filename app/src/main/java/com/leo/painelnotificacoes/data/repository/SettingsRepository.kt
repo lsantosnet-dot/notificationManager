@@ -5,6 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
@@ -37,9 +38,25 @@ class SettingsRepository(private val context: Context) {
         }
     }
 
+    /** When the very first notification was ever captured, so the user can see "collecting since". */
+    val firstCaptureTimestamp: Flow<Long?> = context.settingsDataStore.data.map { prefs ->
+        prefs[FIRST_CAPTURE_TIMESTAMP_KEY]
+    }
+
+    /** Only lowers the stored value — safe to call on every capture, including out-of-order catch-up backfills. */
+    suspend fun recordFirstCaptureIfEarlier(timestampMillis: Long) {
+        context.settingsDataStore.edit { prefs ->
+            val current = prefs[FIRST_CAPTURE_TIMESTAMP_KEY]
+            if (current == null || timestampMillis < current) {
+                prefs[FIRST_CAPTURE_TIMESTAMP_KEY] = timestampMillis
+            }
+        }
+    }
+
     companion object {
         const val DEFAULT_RETENTION_DAYS = 30
         private val RETENTION_DAYS_KEY = intPreferencesKey("retention_days")
         private val GEMINI_API_KEY_KEY = stringPreferencesKey("gemini_api_key")
+        private val FIRST_CAPTURE_TIMESTAMP_KEY = longPreferencesKey("first_capture_timestamp")
     }
 }

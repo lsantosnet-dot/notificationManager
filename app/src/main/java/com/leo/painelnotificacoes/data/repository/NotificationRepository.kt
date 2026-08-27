@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.Flow
 class NotificationRepository(
     private val notificationDao: NotificationDao,
     private val groupSummaryDao: GroupSummaryDao,
+    private val settingsRepository: SettingsRepository,
 ) {
     fun observeGroups(): Flow<List<GroupOverview>> {
         val windowStart = System.currentTimeMillis() - TimeUnit.HOURS.toMillis(24)
@@ -24,7 +25,11 @@ class NotificationRepository(
         groupSummaryDao.observeSummary(packageName)
 
     suspend fun captureNotification(entity: NotificationEntity) {
-        notificationDao.insert(entity)
+        val rowId = notificationDao.insert(entity)
+        // Ignored duplicate (OnConflictStrategy.IGNORE) returns -1; only a real insert counts.
+        if (rowId != -1L) {
+            settingsRepository.recordFirstCaptureIfEarlier(entity.timestamp)
+        }
     }
 
     /** Keys already stored, used to skip duplicates during onListenerConnected catch-up. */
