@@ -44,7 +44,7 @@ class GeminiCloudSummarizer {
                     .bufferedReader()
                     .use { it.readText() }
 
-                if (responseCode !in 200..299) throw GeminiApiException(responseCode)
+                if (responseCode !in 200..299) throw GeminiApiException(responseCode, responseBody)
 
                 JSONObject(responseBody)
                     .getJSONArray("candidates")
@@ -62,14 +62,23 @@ class GeminiCloudSummarizer {
             "acionável:\n\n${buildNotificationSummaryInput(notifications)}"
 
     private companion object {
-        const val ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
+        // "-latest" is a Google-maintained alias that always points at the current Flash model,
+        // so this doesn't go stale (and 404) as Google retires specific dated model versions.
+        const val ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent"
     }
 }
 
-class GeminiApiException(httpCode: Int) : Exception(
-    when (httpCode) {
-        401, 403 -> "Chave de API do Gemini inválida"
-        429 -> "Limite de uso gratuito da API do Gemini atingido, tente novamente mais tarde"
-        else -> "Erro ao chamar a API do Gemini (código $httpCode)"
+class GeminiApiException(httpCode: Int, body: String) : Exception(
+    buildString {
+        append(
+            when (httpCode) {
+                401, 403 -> "Chave de API do Gemini inválida ou sem permissão"
+                404 -> "Modelo do Gemini não encontrado para esta chave"
+                429 -> "Limite de uso gratuito da API do Gemini atingido, tente novamente mais tarde"
+                else -> "Erro ao chamar a API do Gemini (código $httpCode)"
+            }
+        )
+        val detail = Regex("\"message\"\\s*:\\s*\"([^\"]+)\"").find(body)?.groupValues?.get(1)
+        if (!detail.isNullOrBlank()) append(": $detail")
     }
 )
